@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta name="theme-color" content="#11191a"/>
+  <meta name="description" content="Private research preview of the original Zombie Raiders Classic 1.0.4 navigation code and assets. Not the full playable game."/>
+  <title>Zombie Raiders Classic • Original Engine Lab</title>
+  <link rel="icon" href="assets/original-intro.jpg" type="image/jpeg"/>
+  <style>
+    :root{color-scheme:dark;--bg:#101718;--panel:#182122;--stroke:#344342;--text:#eef2ea;--soft:#b0c0b5;--lime:#d0e1a6;--accent:#b6d38d}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text)}
+    .wrap{max-width:1240px;margin:auto;padding:26px 24px 60px}.hero{display:grid;grid-template-columns:minmax(0,1fr) 300px;align-items:center;gap:24px;min-height:175px;border-bottom:1px solid var(--stroke);padding-bottom:22px}
+    .eyebrow{color:var(--accent);font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:800}.hero h1{font-family:Georgia,serif;font-size:clamp(32px,5vw,57px);line-height:1;margin:10px 0 12px}.hero p{margin:0;line-height:1.5;color:var(--soft);max-width:620px;font-size:14px}
+    .hero img{width:100%;height:150px;object-fit:cover;object-position:center;border-radius:9px;filter:saturate(.8);border:1px solid var(--stroke)}
+    .warning{margin:22px 0;background:#25301e;border:1px solid #66774c;padding:13px 16px;border-radius:8px;font-size:13px;line-height:1.5;color:#e0edcb}
+    .columns{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,1fr);gap:20px}.panel{border:1px solid var(--stroke);border-radius:12px;background:var(--panel);padding:16px}.panel h2{font-size:15px;margin:0 0 6px;font-weight:700}.muted{color:var(--soft);font-size:13px;line-height:1.5;margin:0 0 14px}
+    .map-frame{position:relative;width:100%;height:min(63vh,630px);min-height:310px;border:1px solid #52605b;border-radius:8px;overflow:hidden;background:#141b19;touch-action:none}
+    canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}.map-hint{position:absolute;bottom:12px;left:12px;right:12px;pointer-events:none;background:#101918df;padding:8px 11px;border-radius:5px;color:#f0f2ec;font-size:11px}
+    .zoom{display:flex;position:absolute;top:12px;right:12px;gap:5px}.zoom button{font-size:18px;min-width:36px;padding:6px;line-height:1.2}
+    select,button{background:#263535;border:1px solid #64746a;border-radius:6px;color:var(--text);padding:10px 12px;font:inherit;font-size:13px}
+    button{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}button.primary{background:#b5d28a;color:#1a2815;font-weight:750;border-color:#b5d28a}
+    button:hover{filter:brightness(1.15)}button.active{background:#4f6c40;border-color:#b5d28a}select{width:100%;margin:6px 0 12px}
+    .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px}.btn-row button{flex:1}.stat{font-family:ui-monospace,Menlo,monospace;color:#d2e3c1;font-size:12px;line-height:1.75;padding:12px;background:#0f1719;border:1px solid #344441;border-radius:7px;white-space:pre-line;min-height:100px}
+    .legend{display:flex;flex-wrap:wrap;gap:12px;color:var(--soft);font-size:11px;margin-top:10px}.swatch{width:11px;height:11px;display:inline-block;margin-right:4px;border:1px solid #8f9e92}
+    .asset-section{margin-top:24px}.assets{display:grid;grid-template-columns:1fr 1fr;gap:15px}.assets a{color:#dfefc6;text-decoration:none;font-size:13px}.assets img{width:100%;max-height:185px;object-fit:contain;background:#0e1211;border:1px solid var(--stroke);border-radius:8px;margin:8px 0 4px}
+    .footer{border-top:1px solid var(--stroke);padding-top:19px;margin-top:30px;color:#a5b4b0;font-size:12px;line-height:1.6}
+    @media(max-width:850px){.columns{grid-template-columns:1fr}.hero{grid-template-columns:1fr 110px}.hero img{height:120px}.wrap{padding:14px 12px 40px}.map-frame{height:50vh;min-height:300px}}
+    @media(max-width:480px){.hero{grid-template-columns:1fr}.hero img{display:none}.hero h1{font-size:35px}.assets{grid-template-columns:1fr}.map-frame{height:48vh;min-height:270px}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <div><div class="eyebrow">Source preservation • version 1.0.4 • 2012–2013</div><h1>Zombie Raiders Classic</h1><p>Original game assets and recovered navigation logic, operating directly in your browser. This is a technical test environment for the genuine engine conversion, not an imitation survival game.</p></div>
+      <img src="assets/original-intro.jpg" alt="Original Zombie Raiders introductory image extracted from the APK"/>
+    </header>
+    <div class="warning"><strong>Not a playable game yet.</strong> The original map and pathfinding systems are testable below. Combat, zombie AI, crafting execution, original rendering, and playable game saves are not connected. Version 0.12 adds an original entity-update scheduler diagnostic and a health/stamina rule tester, not live gameplay. The original tutorial’s 528 saved entities can now be inspected in the browser. The original Path.move motion calculation is available as a diagnostic animation, with an unverified test speed. The diagnostic map colours are not the game's original rendering.</div>
+    <section class="columns">
+      <div class="panel"><h2>Original world / pathfinding and entity test</h2><p class="muted">Select points to calculate a route using the reconstructed original DEX method 11377 and the real 128 × 128 maps. The tutorial also includes 528 saved world entities, rendered using their original sprite declarations. Drag to pan and use + / − to zoom.</p>
+        <div class="map-frame" id="map-frame"><canvas id="world" aria-label="Original map's terrain grid with selectable route markers"></canvas><div class="zoom"><button id="zoomOut" aria-label="Zoom out">−</button><button id="zoomIn" aria-label="Zoom in">+</button></div><div class="map-hint">Tap a tile to place the next marker. This is a terrain and movement diagnostic, not the original game renderer.</div></div>
+        <div class="legend"><span><span class="swatch" style="background:#90be66"></span>walkable</span><span><span class="swatch" style="background:#4c6378"></span>restricted</span><span><span class="swatch" style="background:#203125"></span>start</span><span><span class="swatch" style="background:#ffdc77"></span>path</span></div>
+      </div>
+      <aside class="panel"><h2>Engine controls</h2><p class="muted">This part is directly derived from original game data and navigation instructions.</p>
+        <label for="mapSelect" style="font-size:12px">Original map</label><select id="mapSelect"><option value="tutorial">Tutorial</option><option value="map1" selected>Map 1</option><option value="map2">Map 2</option><option value="map3">Map 3</option><option value="map4">Map 4</option></select>
+        <div class="btn-row"><button id="pickStart" class="active">1. Start tile</button><button id="pickEnd">2. Destination</button></div>
+        <div class="btn-row"><button id="find" class="primary">Trace original route</button><button id="reset">Reset</button></div>
+        <div class="btn-row"><button id="walk" class="primary">Walk route (original Path.move)</button></div>
+        <label for="speed" style="font-size:12px">Movement speed (original Player1 DNA = 10; other values for testing only)</label><select id="speed"><option value="4">4 · slow</option><option value="10" selected>10 · original Player1</option><option value="16">16 · fast</option></select>
+        <p class="muted">The sprite above the moving marker is from the original Player1 sprite declaration in <code>game.xml</code>. Movement uses recovered original <code>Path.move</code> with the Player1 DNA speed of 10 as the default, with the original server movement-speed/stamina rule (stamina zero halves speed); complete game world updates are not running.</p>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px"><input type="checkbox" id="showOriginalEntities" checked/> Show original tutorial saved objects</label>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:12px;font-size:12px"><input type="checkbox" id="applyOriginalCollision" checked/> Project original tutorial obstacles into pathfinding</label>
+        <button type="button" id="setPlayerAsStart" style="width:100%;margin-bottom:10px">Use original tutorial player start</button>
+        <div id="entityInfo" class="stat" style="margin-bottom:13px">Loading original tutorial entity snapshot…</div>
+        <p class="muted">On the tutorial map, tap an object to inspect its actual saved DNA identity and stats. To choose a path destination instead, turn off the entity overlay. The sprite placement is an analysis aid, not the original renderer.</p>
+        <section aria-label="Recovered original server rules diagnostics" style="background:#111b1a;border:1px solid #40534a;border-radius:8px;padding:12px;margin:0 0 14px">
+          <h3 style="margin:0 0 8px;font-size:14px">Recovered original server rules</h3>
+          <p class="muted">Test the actual <code>changeLifeState</code> health/stamina rules on a <strong>temporary copy</strong> of the selected original entity. These controls are <strong>not combat or a running game</strong>.</p>
+          <div class="btn-row"><button type="button" id="damageLife">−10 health</button><button type="button" id="healLife">+10 health</button><button type="button" id="spendStamina">−10 stamina</button></div>
+          <div class="btn-row"><button type="button" id="testStarvation">Test 60+ seconds (starvation)</button><button type="button" id="restoreLife">Reset selected stats</button><button type="button" id="advanceScheduler">Advance recovered world scheduler</button><button type="button" id="resetScheduler">Reset scheduler</button></div>
+          <div id="schedulerInfo" role="status" class="stat">Original entity scheduler ready after tutorial loads. No AI, combat or entity side effects are connected.</div>
+        </section>
+        <label for="mode" style="font-size:12px">Path cost mode</label><select id="mode"><option value="weighted">Original density-weighted comparator (test)</option><option value="plain" selected>Original Player1 low-weight comparator</option></select>
+        <div id="stats" class="stat" role="status">Loading unchanged original game data…</div>
+        <p class="muted" style="margin-top:14px">Map bytes and object definitions are exported directly from <code>srv/maps/*.terrain</code> and <code>srv/dna.dat</code>. The source files are included in the development ZIP.</p>
+      </aside>
+    </section>
+    <section class="asset-section panel"><h2>Original art — untouched files</h2><p class="muted">Click to inspect the actual original graphics from the uploaded APK at full resolution. These are not reconstructed artwork.</p>
+      <div class="assets"><a href="assets/original-sprites.png" target="_blank" rel="noopener">Original hi-res sprite atlas (4096 × 2048)<img src="assets/original-sprites.png" alt="Original Zombie Raiders full sprite atlas" loading="lazy"></a><a href="assets/original-menu-bg.jpg" target="_blank" rel="noopener">Original menu background<img src="assets/original-menu-bg.jpg" alt="Original Zombie Raiders menu background" loading="lazy"></a></div>
+    </section>
+    <footer class="footer">Private preservation research using the file supplied by the owner of this project. Original rights remain with the game's rights holder. No Android executable is loaded or executed by this website. This build demonstrates recovered path search, movement, an original saved entity snapshot, health/stamina rules, and a callback-only entity scheduler, not the original game as a whole.</footer>
+  </main>
+  <script src="assets/original-data.js"></script>
+  <script type="module" src="app.mjs"></script>
+</body>
+</html>
